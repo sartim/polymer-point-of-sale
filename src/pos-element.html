@@ -1,0 +1,438 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+  <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+  <link rel="import" href="../bower_components/neon-animation/neon-animations.html">
+
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+
+<link rel="import" href="cart-data-storage.html">
+<!--<link rel="import" href="customer-element.html">-->
+<!--<link rel="import" href="payment-element.html">-->
+<link rel="import" href="my-icons.html">
+<link rel="stylesheet" href="sections.css">
+
+
+<dom-module id="pos-element">
+    <template>
+        <style>
+            :host {
+                --app-primary-color: #002f3b;
+                --app-secondary-color: black;
+
+                display: block;
+            }
+
+            app-header {
+                color: #fff;
+                background-color: var(--app-primary-color);
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+
+            .drawer-list {
+                margin: 0 20px;
+            }
+
+            .drawer-list a {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--app-secondary-color);
+                line-height: 40px;
+            }
+
+            .drawer-list a.iron-selected {
+                color: black;
+
+                font-weight: bold;
+            }
+
+            .cd-cart {
+                position: absolute;
+                z-index: 2;
+                top: 10px;
+                right: 10px;
+                height: 50px;
+                width: 50px;
+                background: url(../images/cd-icon-cart.svg) no-repeat center center;
+            }
+
+            /*
+            .cd-cart span {
+              position: absolute;
+              top: 2px;
+              right: 5px;
+              height: 18px;
+              width: 18px;
+              line-height: 18px;
+              background-color: #46b29d;
+              color: #ffffff;
+              font-size: 1rem;
+              font-weight: bold;
+              text-align: center;
+              border-radius: 50%;
+            }
+            */
+
+        </style>
+
+        <!--app-location route="{{route}}"></app-location-->
+        <cart-data-storage
+                id="cart"
+                cart="{{cart}}"
+                till="{{till}}"
+                >
+
+        </cart-data-storage>
+
+        <app-route
+                route="{{route}}"
+                pattern="/:page"
+                data="{{routeData}}"
+                tail="{{subroute}}">
+
+        </app-route>
+
+        <app-header-layout>
+            <app-header fixed condenses effects="waterfall">
+                <app-toolbar>
+
+                    <div main-title style="width: 30%;flex: inherit;">
+                        <a href="#">
+                        <img src="../images/logo.png" style="width: 100px; "/>
+                        </a>
+                        <span style="float: right">Administrator </span>
+                        <span style="margin-left: 50px"></span>
+                    </div>
+
+                    <div>
+                        <paper-tabs selected="{{till}}" >
+                            <template is="dom-repeat" items="{{cart}}" as="order">
+                                <paper-tab>[[order.name]]</paper-tab>
+                            </template>
+
+                        </paper-tabs>
+                    </div>
+
+                    
+
+                    <paper-icon-button icon="add" on-tap="_addTill">new</paper-icon-button>
+                    <template is="dom-if" if="{{cart.length}}">
+                        <paper-icon-button icon="close" on-tap="_confirmDel">delete</paper-icon-button>
+                    </template>
+                   
+                    <paper-icon-button icon="fullscreen" on-tap="_toggleFullScreen">fullscreen</paper-icon-button>
+                    <style>
+                      paper-button{background-color:#0D578B;color:white}
+                    </style>
+                    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" backdrop>
+                      <h2>Destroy Current Order?</h2>
+                      <div>You will lose any data associated with the current order</div>
+
+                      <div class="buttons">
+                        <paper-button dialog-confirm autofocus>Cancel</paper-button>
+                        <paper-button on-tap="_removeTill" dialog-confirm autofocus>Confirm</paper-button>
+                      </div>
+                    </paper-dialog> 
+                    <div style="position: absolute; top:0; right:0">
+                        <iron-icon
+                            style="border-right: 2px solid black;width: 60px;height: 100%; margin: 0 5px; padding: 10px;"
+                            class="pull-right" icon="{{_computeNetworkIcon(offline)}}"></iron-icon>
+                    </div>
+
+                    <!--a href="#0" class="cd-cart">
+                      <paper-icon-button icon="shopping-cart" aria-label$="Shopping cart: [[_computePluralizedQuantity(numItems)]]"></paper-icon-button>
+                      <span aria-hidden="true" hidden$="[[!numItems]]">0 - [[numItems]]</span>
+                    </a-->
+
+                </app-toolbar>
+            </app-header>
+            <!--<div>-->
+
+                <iron-pages
+                        selected="{{page}}"
+                        attr-for-selected="name"
+                        fallback-selection="till"
+                        role="main">
+
+                    <array-selector id="tillselector" items="{{cart}}" selected="{{currentTill}}"></array-selector>
+                    <till-element 
+                        name="till"
+                        till={{currentTill}}>
+                        
+                    </till-element>
+
+
+                    <customers-element name="customers"></customers-element>
+                    <payment-element name="payment"></payment-element>
+
+                    <my-view4 name="view4"></my-view4>
+                    <my-view5 name="view5"></my-view5>
+
+
+                </iron-pages>
+            <!--</div>-->
+        </app-header-layout>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'pos-element',
+
+            properties: {
+                till: {
+                    type: Number,
+                    value: -1,
+                    observer: '_tillChanged'
+                },
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged',
+                    value: 'till'
+                },
+                numItems: {
+                    type: Number,
+                    value: 0
+                },
+                offline: {
+                    type: Boolean,
+                    value: !navigator.onLine
+                },
+                _shouldShowTabs: {
+                    computed: '_computeShouldShowTabs(page, smallScreen)'
+                },
+
+                _shouldRenderTabs: {
+                    computed: '_computeShouldRenderTabs(_shouldShowTabs, loadComplete)'
+                },
+
+                _shouldRenderDrawer: {
+                    computed: '_computeShouldRenderDrawer(smallScreen, loadComplete)'
+                }
+            },
+
+            observers: [
+                '_routePageChanged(routeData.page)'
+            ],
+
+            listeners: {
+                'add-cart-item': '_onAddCartItem',
+                'navigate-page': '_onNavigatePage',
+                'set-cart-item': '_onSetCartItem',
+                'clear-cart': '_onClearCart',
+                'change-section': '_onChangeSection',
+                'announce': '_onAnnounce',
+                'dom-change': '_domChange'
+            },
+
+            created: function () {
+                window.performance && performance.mark && performance.mark('shop-app.created');
+                // Custom elements polyfill safe way to indicate an element has been upgraded.
+                this.removeAttribute('unresolved');
+            },
+
+            ready: function () {
+
+                // listen for online/offline
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                    this.listen(window, 'online', '_notifyNetworkStatus');
+                    this.listen(window, 'offline', '_notifyNetworkStatus');
+                });
+            },
+            _computeNetworkIcon: function (offline) {
+                return offline ? "device:signal-wifi-off" : "device:signal-wifi-4-bar";
+            },
+            _tillChanged: function () {
+                if (this.till < 0) {
+                    return
+                }
+                var item = this.get(['cart', this.till]);
+                this.$.tillselector.select(item);
+
+            },
+
+            _routePageChanged: function (page) {
+                this.page = page || 'till';
+            },
+
+            _pageChanged: function (page) {
+                // Load page import on demand. Show 404 page if fails
+                var resolvedPageUrl = this.resolveUrl(page + '-element.html');
+                this.importHref(resolvedPageUrl, null, this._showPage404, true);
+            },
+
+            _pageLoaded: function (shouldResetLayout) {
+                this._ensureLazyLoaded();
+                if (shouldResetLayout) {
+                    // The size of the header depends on the page (e.g. on some pages the tabs
+                    // do not appear), so reset the header's layout only when switching pages.
+                    this.async(function () {
+                        this.$.header.resetLayout();
+                    }, 1);
+                }
+            },
+
+            _ensureLazyLoaded: function () {
+                // load lazy resources after render and set `loadComplete` when done.
+                if (!this.loadComplete) {
+                    Polymer.RenderStatus.afterNextRender(this, function () {
+                        this.importHref(this.resolveUrl('lazy-resources.html'), function () {
+                            // Register service worker if supported.
+                            if ('serviceWorker' in navigator) {
+                                navigator.serviceWorker.register('/service-worker.js');
+                            }
+                            this._notifyNetworkStatus();
+                            this.loadComplete = true;
+                        });
+                    });
+                }
+            },
+
+            _notifyNetworkStatus: function () {
+                var oldOffline = this.offline;
+                this.offline = !navigator.onLine;
+                // Show the snackbar if the user is offline when starting a new session
+                // or if the network status changed.
+                if (this.offline || (!this.offline && oldOffline === true)) {
+
+                }
+            },
+
+            _addTill: function () {
+                this.$.cart.createNewTill();
+
+            },
+            _confirmDel: function () {
+                dialog.open();
+            },
+            _removeTill: function () {
+               this.$.cart.removeTill(this.till);   
+            },
+
+            // Elements in the app can notify section changes.
+            // Response by a11y announcing the section and syncronizing the category.
+            _onChangeSection: function (event) {
+                var detail = event.detail;
+                this.categoryName = detail.category || '';
+                // Announce the page's title
+                if (detail.title) {
+                    document.title = detail.title + ' - SHOP';
+                    this._announce(detail.title + ', loaded');
+                }
+            },
+            _onAddCartItem: function (event) {
+                if(!this.cart.length){
+                    this._addTill();
+                }
+                this.$.cart.addItem(this.till, event.detail);
+
+            },
+            _onNavigatePage: function (event) {
+                console.log('navigate page'+event.detail);
+                this.page =  event.detail.page;
+            },
+            _onSetCartItem: function (event) {
+                var detail = event.detail;
+                this.$.cart.setItem(detail);
+                if (detail.quantity === 0) {
+                    this._announce('Item deleted');
+                } else {
+                    this._announce('Quantity changed to ' + detail.quantity);
+                }
+            },
+
+            _onClearCart: function () {
+                this.$.cart.clearCart();
+                this._announce('Cart cleared');
+            },
+
+            // Elements in the app can notify a change to be a11y announced.
+            _onAnnounce: function (e) {
+                this._announce(e.detail);
+            },
+
+            // A11y announce the given message.
+            _announce: function (message) {
+                this._a11yLabel = '';
+                this.debounce('_a11yAnnouncer', function () {
+                    this._a11yLabel = message;
+                }, 100);
+            },
+
+            // This is for performance logging only.
+            _domChange: function (e) {
+                if (window.performance && performance.mark && !this.__loggedDomChange) {
+                    var target = Polymer.dom(e).rootTarget;
+                    if (target.domHost.is.match(this.page)) {
+                        this.__loggedDomChange = true;
+                        performance.mark(target.domHost.is + '.domChange');
+                    }
+                }
+            },
+
+            _computeShouldShowTabs: function (page, smallScreen) {
+                return (page === 'home' || page === 'list' || page === 'detail') && !smallScreen;
+            },
+
+            _computeShouldRenderTabs: function (_shouldShowTabs, loadComplete) {
+                return _shouldShowTabs && loadComplete;
+            },
+
+            _computeShouldRenderDrawer: function (smallScreen, loadComplete) {
+                return smallScreen && loadComplete;
+            },
+
+            _computePluralizedQuantity: function (quantity) {
+                return quantity + ' ' + (quantity === 1 ? 'item' : 'items');
+            },
+
+            _showPage404: function () {
+                this.page = 'view404';
+            },
+            _toggleFullScreen:function(evt) {
+              if ((document.fullScreenElement && document.fullScreenElement !== null) ||
+               (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+                if (document.documentElement.requestFullScreen) {
+                  document.documentElement.requestFullScreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                  document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullScreen) {
+                  document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+
+                  evt.currentTarget.icon = "fullscreen-exit";
+
+              } else {
+                if (document.cancelFullScreen) {
+                  document.cancelFullScreen();
+                } else if (document.mozCancelFullScreen) {
+                  document.mozCancelFullScreen();
+                } else if (document.webkitCancelFullScreen) {
+                  document.webkitCancelFullScreen();
+                }
+
+                  evt.currentTarget.icon = "fullscreen";
+
+              }
+            }
+
+        });
+    </script>
+</dom-module>

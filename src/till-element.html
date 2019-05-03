@@ -1,0 +1,122 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+
+<!--
+
+<link rel="import" href="my-customers.html">
+<link rel="import" href="my-fruits-vegetables.html">
+<link rel="import" href="my-partner-services.html">
+-->
+<link rel="import" href="cart-element.html">
+
+<link rel="import" href="keyboard-element.html">
+<link rel="import" href="inventory-element.html">
+
+
+<dom-module id="till-element">
+    <style is="custom-style">
+        
+    </style>
+
+
+    <template>
+
+            <div class="col-md-4" style="background-color: whitesmoke; border-right: solid 3px #787878; padding: 0px; height: 100vh">
+
+
+
+        <!--<array-selector id="selector" items="{{cart}}" selected="{{order}}" multi></array-selector>-->
+
+                <cart-element 
+                    id="receipt" 
+                    order="{{till.items}}" 
+                    style="height: 350px">
+                    
+                </cart-element>
+                <div style="background-color: whitesmoke; border-top: solid 3px rgb(110, 200, 155); padding: 10px">
+                <keyboard-element></keyboard-element>
+                </div>
+
+            </div>
+
+            <div class="col-md-8" style="padding: 0px; background-color: whitesmoke; height: 100vh">
+            <inventory-element></inventory-element>
+            </div>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'till-element',
+
+            properties: {
+                page: {
+                    type: String,
+                    reflectToAttribute: true,
+                    observer: '_pageChanged'
+                },
+                till: {
+                    type: Object
+                    //value:
+                },
+               
+                products: {
+                    type: Object
+                }
+            },
+
+            observers: [
+                //'_routePageChanged(routeData.page)'
+            ],
+            listeners: {
+                //'add-cart-item': '_onAddCartItem'
+            },
+            _routePageChanged: function (page) {
+                this.page = page || 'fruits-vegetables';
+            },
+
+
+            _pageChanged: function (page) {
+                // Load page import on demand. Show 404 page if fails
+                var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+                this.importHref(resolvedPageUrl, null, this._showPage404, true);
+            },
+
+            _showPage404: function () {
+                this.page = 'view404';
+            },
+
+            initializeDefaultProducts: function () {
+                this.products = {
+                    name: "Default",
+                }
+            },
+
+            ready: function () {
+                //this.$.selector.select(this.get(['cart', 0])['items']);
+
+            },
+            _computeOrder: function () {
+                if (this.till < 0) {
+                    return [];
+                }
+                var item = this.get(['cart', this.till]);
+                return item['items'];
+            },
+            _tillChanged: function () {
+                if (this.till < 0) {
+                    return
+                }
+                var item = this.get(['cart', this.till]);
+                this.$.receipt.order = item['items'];
+            }
+        });
+    </script>
+</dom-module>
+
+

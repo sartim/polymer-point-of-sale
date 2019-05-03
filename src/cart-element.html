@@ -1,0 +1,101 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+
+<dom-module id="cart-element">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+
+            }
+
+            .big {
+                --iron-icon-height: 128px;
+                --iron-icon-width: 128px;
+            }
+
+            paper-item.fancy {
+                --paper-item-focused: {
+                    background: var(--paper-amber-500);
+                    font-weight: bold;
+                };
+                --paper-item-focused-before: {
+                    opacity: 0;
+                };
+            }
+        </style>
+
+        <div class="" style="overflow-y: auto; height:350px; background-color: #FFF">
+        <paper-listbox selected="0">
+            <template is="dom-repeat" items="{{order}}" as="item">
+                <paper-item class="fancy">
+                    <span style="display: none">{{index}}</span>  <span style="flex: 1;">{{item.item.name}}</span>
+                    <span>{{item.quantity}}</span> <span style="margin-left: 50px"></span> <span>$ {{item.item.price}}</span>
+                </paper-item>
+            </template>
+            <template is="dom-if" if="{{order.length}}">
+                <paper-item>
+                <hr>
+                    <paper-item-body two-line>
+                    <hr>
+                        <div><span>Total: </span> <span> $ [[total]] </span></div>
+                    </paper-item-body>
+                </paper-item>
+            </template>
+
+        </paper-listbox>
+        
+        <template is="dom-if" if="{{!order.length}}">
+            <div style="text-align: center">
+                <h1>Your Shopping Cart is empty.</h1>
+                <iron-icon class="big" icon="shopping-cart"></iron-icon>
+            </div>
+        </template>
+
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'cart-element',
+            properties: {
+
+                order: {
+                    type: Array,
+                    notify:true//,
+                    //observer: '_computeTotal'
+                },
+                total: {
+                    type: Number,
+                    computed:'_computeTotal(order.splices)'
+                }
+            },
+            ready: function () {
+                
+            },
+            _computeNumItems: function (till) {
+                if (till >= 0 && this.cart[till].items) {
+                    return this.cart[till].items.reduce(function (total, entry) {
+                        return total + entry.quantity;
+                    }, 0);
+                }
+
+                return 0;
+            },
+
+            _computeTotal: function () {
+                var t = 0.00;
+                if (this.order.length>0) {
+                     t= this.order.reduce(function (total, entry) {
+                        return  total + (entry.quantity * entry.item.price);
+                    }, 0);
+                    
+                }
+                
+                return parseFloat(t).toFixed(2);
+            },
+        });
+    </script>
+</dom-module>

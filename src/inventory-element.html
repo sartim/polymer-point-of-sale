@@ -1,0 +1,609 @@
+<link rel="import" href="../bower_components/polymer/polymer.html" xmlns="http://www.w3.org/1999/html">
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="shared-styles.html">
+
+
+<dom-module id="inventory-element">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                padding: 0;
+            }
+            .pr_card {
+                padding: 10px;
+            }
+            .product-list-scroller {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                -ms-box-sizing: border-box;
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                -webkit-transform: translate3d(0,0,0);
+            }
+        </style>
+
+
+            <app-toolbar style="background-color: #bec5be;">
+                <paper-icon-button icon="menu"></paper-icon-button>
+                <div main-title>Home</div>
+
+                <paper-input placeholder="Search Item Name" value="{{filter::input}}"></paper-input>
+                
+            </app-toolbar>
+
+
+            <!--paper-tabs selected="0">
+                <paper-tab>Fruits and Vegetables.</paper-tab>
+                <paper-tab>Partner Service</paper-tab>
+
+            </paper-tabs-->
+
+            
+        <iron-list items="[[_filterItems(data,filter)]]" as="item" grid style="height: 90vh; padding-top: 10px;" >
+            <template>
+            <div class="pr_card">
+                <paper-card
+                        on-tap="_addToCart"
+                        class="item"
+                        style="height: 200px;width: 150px;"
+                        elevation="3"
+                        heading="$[[item.price]]"
+                        image="../images/extra_flandiria_chicory.jpeg">
+                    <div class="card-content">[[item.name]]</div>
+
+                </paper-card>
+            </div>
+
+            </template>
+        </iron-list>
+
+        <template is="dom-if" if="{{!dataFiltered.length}}">
+            <div style="text-align: center">
+                <h1>Inventory is empty, Please add items.</h1>
+
+            </div>
+        </template>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'inventory-element',
+            properties: {
+                data: {
+                    type: Array,
+                    notify:true
+                },
+                filter:{
+                    type:String,
+                    notify:true,
+                    value:''
+                }
+            },
+            observers: [
+               // '_searchQueryChanged(searchQuery,data,dataFiltered)'
+            ],
+            ready: function () {
+                this.data = [
+                    {
+                        "index": 0,
+                        "price": "2602.73",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Petty Lopez",
+                        "size":14,
+                        "tags": [
+                            "proident",
+                            "adipisicing",
+                            "fugiat"
+                        ]
+                    },
+                    {
+                        "index": 1,
+                        "price": "3451.77",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Cecile Collins",
+                        "size":14,
+                        "tags": [
+                            "sint",
+                            "enim",
+                            "proident"
+                        ]
+                    },
+                    {
+                        "index": 2,
+                        "price": "3472.01",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Benita Sims",
+                        "size":14,
+                        "tags": [
+                            "ut",
+                            "est",
+                            "enim"
+                        ]
+                    },
+                    {
+                        "index": 3,
+                        "price": "1086.44",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Ora Vang",
+                        "tags": [
+                            "deserunt",
+                            "proident",
+                            "mollit"
+                        ]
+                    },
+                    {
+                        "index": 4,
+                        "price": "1043.11",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Tamra Nixon",
+                        "size":14,
+                        "tags": [
+                            "nisi",
+                            "consequat",
+                            "fugiat"
+                        ]
+                    },
+                    {
+                        "index": 5,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 6,
+                        "price": "4534.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Grandy Wills",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 7,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 8,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 9,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 10,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":11,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":12,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":13,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":14,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":15,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":16,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":17,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":18,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":19,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":20,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 21,
+                        "price": "2602.73",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Petty Lopez",
+                        "size":14,
+                        "tags": [
+                            "proident",
+                            "adipisicing",
+                            "fugiat"
+                        ]
+                    },
+                    {
+                        "index": 22,
+                        "price": "3451.77",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Cecile Collins",
+                        "size":14,
+                        "tags": [
+                            "sint",
+                            "enim",
+                            "proident"
+                        ]
+                    },
+                    {
+                        "index": 23,
+                        "price": "3472.01",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Benita Sims",
+                        "size":14,
+                        "tags": [
+                            "ut",
+                            "est",
+                            "enim"
+                        ]
+                    },
+                    {
+                        "index": 24,
+                        "price": "1086.44",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Ora Vang",
+                        "tags": [
+                            "deserunt",
+                            "proident",
+                            "mollit"
+                        ]
+                    },
+                    {
+                        "index": 25,
+                        "price": "1043.11",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Tamra Nixon",
+                        "size":14,
+                        "tags": [
+                            "nisi",
+                            "consequat",
+                            "fugiat"
+                        ]
+                    },
+                    {
+                        "index": 26,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 27,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 28,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 29,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 30,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index": 31,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":32,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":33,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":34,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":35,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":36,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":37,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":38,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":39,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+                    {
+                        "index":40,
+                        "price": "2792.80",
+                        "picture": "http://placehold.it/32x32",
+                        "name": "Nina Mann",
+                        "size":14,
+                        "tags": [
+                            "veniam",
+                            "velit",
+                            "amet"
+                        ]
+                    },
+
+                ];
+            },
+            _addToCart: function (evt) {
+
+                this.fire('add-cart-item', {
+                    item: evt.model.item,
+                    quantity: 1//parseInt(this.$.quantitySelect.value, 10),
+
+                });
+            },
+
+            _filterItems: function (data,query) {
+                query =query.trim().toLowerCase();
+                if(!query){
+                    return data;
+                }
+
+                return data.filter(function (item) {
+                    return item.name.toLowerCase().indexOf(query)>-1;
+                });
+            }
+        });
+    </script>
+</dom-module>

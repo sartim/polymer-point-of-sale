@@ -1,0 +1,148 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+
+<dom-module id="cart-data-storage">
+
+    <template>
+        <iron-localstorage
+                name="my-pos-cart-data"
+                value="{{cart}}"
+                on-iron-localstorage-load-empty="_initializeCart">
+
+        </iron-localstorage>
+    </template>
+
+    <script>
+
+        Polymer({
+
+            is: 'cart-data-storage',
+
+            properties: {
+
+                cart: {
+                    type: Array,
+                    notify: true,
+                    observer:'_cartReady'
+                },
+                till: {
+                    type: Number,
+                    value: -1,
+                    notify:true
+                },
+
+                numItems: {
+                    type: Number,
+                    computed: '_computeNumItems(till)',
+                    notify: true
+                },
+
+                total: {
+                    type: Number,
+                    computed: '_computeTotal(till)',
+                    notify: true
+                }
+
+            },
+            ready: function () {
+
+            },
+            _cartReady: function (newV,oldV) {
+                //console.log(oldV+' to '+newV);
+                if(!oldV) {
+                    this.till = this.cart.length - 1;
+                }
+            },
+
+            createNewTill: function () {
+                this.push('cart', {
+                            "name": new Date().toLocaleTimeString(),
+                            "items": []
+                        }
+                );
+                this.till = this.cart.length-1;
+            },
+            removeTill: function (till) {
+                this.splice('cart', till);
+                this.till = this.cart.length-1;
+            },
+
+            addItem: function (till, detail) {
+                var i = this._indexOfEntry(till, detail.item.name, detail.size);
+                if (i !== -1) {
+                    detail.quantity += this.cart[till].items[i].quantity;
+                }
+                this.setItem(till, detail);
+            },
+
+            setItem: function (till, detail) {
+                var i = this._indexOfEntry(till, detail.item.name, detail.size);
+                //var order = this.cart[till]['items'];
+                if (detail.quantity === 0) {
+                    // Remove item from cart when the new quantity is 0.
+                    if (i !== -1) {
+                        this.splice('cart.' + till + '.items', i, 1);
+                    }
+                } else {
+                    // Use Polymer's array mutation methods (`splice`, `push`) so that observers
+                    // on `cart.splices` are triggered.
+
+
+                    //this.notifyPath('profile')
+                    if (i !== -1) {
+                        this.splice('cart.' + till + '.items', i, 1, detail);
+                    } else {
+                        this.push('cart.' + till + '.items', detail);
+                    }
+                }
+            
+
+            },
+
+            clearCart: function () {
+
+                this.cart = [];
+            },
+
+            _computeNumItems: function (till) {
+                if (till >= 0 && this.cart[till].items) {
+                    return this.cart[till].items.reduce(function (total, entry) {
+                        return total + entry.quantity;
+                    }, 0);
+                }
+
+                return 0;
+            },
+
+            _computeTotal: function (till) {
+                if (till >= 0 && this.cart[till].items) {
+                    return this.cart[till].items.reduce(function (total, entry) {
+                        return total + entry.quantity * entry.item.price;
+                    }, 0);
+                }
+
+                return 0;
+            },
+
+            _indexOfEntry: function (till, name, size) {
+                if (this.cart[till]['items']) {
+                    for (var i = 0; i < this.cart[till]['items'].length; ++i) {
+                        var entry = this.cart[till]['items'][i];
+                        if (entry.item.name === name && entry.size === size) {
+                            return i;
+                        }
+                    }
+                }
+
+                return -1;
+            },
+
+            _initializeCart: function () {
+                this.clearCart();
+            }
+
+        });
+
+    </script>
+
+</dom-module>

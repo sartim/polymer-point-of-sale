@@ -1,0 +1,222 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="stylesheet" href="section.css">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+
+<dom-module id="customers-element">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+
+      .form {
+        display: flex;
+        border-bottom: solid 5px rgb(110,200,155);
+      }
+
+      .form paper-input {
+        flex: 1;
+        margin-right: 10px;
+      }
+
+      .form vaadin-date-picker {
+        width: 140px;
+      }
+
+      .form paper-button {
+        align-self: flex-end;
+      }
+    </style>
+
+    <style>
+
+    .new-customer {
+        left: 58%;
+        margin-left: 120px;
+    }
+
+    .button {
+        position: absolute;
+        top: 0px;
+        line-height: 32px;
+        padding: 3px 13px;
+        font-size: 20px;
+        background: rgb(230, 230, 230);
+        margin: 12px;
+        border-radius: 3px;
+        border: solid 1px rgb(209, 209, 209);
+        cursor: pointer;
+        transition: all 150ms linear;
+    }
+
+    .button.back {
+        left: 0px;
+        margin-left: 16px;
+    }
+    .top-content {
+        position: relative;
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        height: 64px;
+        border-bottom: dashed 1px rgb(215,215,215);
+        text-align: center;
+    }
+
+    .searchbox {
+        right: auto;
+        margin-left: -90px;
+        margin-top: 8px;
+        left: 50%;
+    }
+
+    .search-clear {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        top: 11px;
+        left: 11px;
+        cursor: pointer;
+    }
+    .searchbox input {
+        width: 170px;
+        border: 1px solid #cecbcb;
+        padding: 10px 20px;
+        padding-left: 38px;
+        margin: 6px;
+        background: url(../images/search.png) no-repeat 15px;
+        background-color: white;
+        border-radius: 20px;
+        font-family: "Lato","Lucida Grande", Helvetica, Verdana, Arial;
+        font-size: 13px;
+        margin-top: 14px;
+    }
+
+    .fa {
+      display: inline-block;
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    </style>
+
+    <style>
+
+  #content{
+    display:none;
+  }
+
+  </style>
+
+    <section class="top-content">
+        <span class="button back" name="till" on-tap="_onNavigate">
+            <i class="fa fa-angle-double-left"></i>
+            Cancel
+        </span>
+        <span class="searchbox">
+            <input placeholder="Search Customers">
+            <span class="search-clear"></span>
+        </span>
+        <span class="searchbox"></span>
+        <span class="button new-customer" id="toggle">
+            <i class="fa fa-user"></i>
+            <i class="fa fa-plus"></i>
+        </span>
+    </section>
+
+    <div class="card">
+    
+     <div class="form" id="content">
+       
+       <div class="col-md-6">
+        <paper-input label="Name" value="{{customer.name}}"></paper-input>
+        <paper-input label="City" value="{{customer.city}}"></paper-input>
+        <paper-input label="Street" value="{{customer.street}}"></paper-input>
+        <paper-input label="Phone" value="{{customer.phone}}"></paper-input>
+      </div>
+      <div class="col-md-6">
+        <paper-input label="Email" value="{{customer.email}}"></paper-input>
+        <paper-input label="Barcode" value="{{customer.barcode}}"></paper-input>
+        <paper-input label="Tax ID" value="{{customer.tax_id}}"></paper-input>
+        <vaadin-date-picker label="Date Added" value="{{customer.date_added}}"></vaadin-date-picker>
+      </div>
+      
+      <paper-button rasised on-tap="_addcustomer"><i class="fa fa-floppy-o" style="font-size: 50px; margin-left: 11em"></i></paper-button>
+     </div>
+
+     <vaadin-grid  items="{{customers}}" selection-mode="multi" on-selected-items-changed="onSelect">
+      <table>
+        <colgroup>
+          <col name="name">
+          <col name="email">
+          <col name="phone">
+          <col name="date_added">
+        </colgroup>
+      </table>
+     </vaadin-grid>
+    </div>
+    <iron-localstorage name="customers"
+      value="{{customers}}"
+      on-iron-localstorage-load-empty="initializeStorage"
+    >
+    </iron-localstorage>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'customers-element',
+
+       properties: {
+          customer: {
+            type: Object,
+            value: function(){
+              return {};
+            }
+          },
+          customers: {
+            type: Array,
+            value: function() {
+              return [];
+            }
+          }
+        },
+
+      _addcustomer: function() {
+        this.push('customers', this.customer);
+        this.customer = {};
+      },
+
+      initializeStorage: function() {
+        this.customers = [];
+      },
+        _onNavigate: function (evt) {
+            evt.preventDefault();
+            this.fire('navigate-page',{'page': evt.target.name});
+        },
+    });
+  </script>
+
+  <script>
+
+  var toggle  = document.getElementById("toggle");
+  var content = document.getElementById("content");
+
+  toggle.addEventListener("click", function(){
+    content.style.display = (content.dataset.toggled ^= 1) ? "block" : "none";
+  }, false);
+
+</script>
+</dom-module>

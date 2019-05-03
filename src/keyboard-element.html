@@ -1,0 +1,252 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+
+<link rel="import" href="shared-styles.html">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+  <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+
+<dom-module id="keyboard-element">
+    <template>
+         <style>
+
+            .actionpad {
+                display: inline-block;
+                /*float: left;*/
+                padding: 0;
+                margin: 16px;
+                margin-top: 8px;
+                margin-right: 0;
+                text-align: center;
+                vertical-align: top;
+                width: 188px;
+                border: none;
+                border-radius: 0;
+                border-top: 1px solid;
+                border-left: 1px solid;
+                border-color: #bfbfbf;
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+            }
+
+            .numpad {
+                display: inline-block;
+                /*float: right;*/
+                text-align: center;
+                margin: 16px;
+                margin-top: 8px;
+                margin-left: 0px;
+                border: none;
+                border-radius: 0;
+                border-top: 1px solid;
+                border-color: #bfbfbf;
+                border-top-right-radius: 4px;
+            }
+
+            .numpad button {
+                float: left;
+                height: 54px;
+                width: 54px;
+                font-weight: bold;
+                vertical-align: middle;
+                color: #555555;
+                border-radius: 0;
+                border: none;
+                border-right: 1px solid;
+                border-bottom: 1px solid;
+                border-color: #bfbfbf;
+                transition: all 150ms linear;
+            }
+
+            .input-button {
+                font-size: 24px;
+            }
+
+            button, .pos a.button {
+                display: inline-block;
+                cursor: pointer;
+                padding: 4px 10px;
+                font-size: 11px;
+                border: 1px solid #cacaca;
+                background: #e2e2e2;
+                border-radius: 3px;
+            }
+
+            button {
+                box-shadow: none;
+                outline: none;
+                border: none;
+                font-family: 'Lato';
+            }
+
+            button:hover {
+                background-color: whitesmoke;
+            }
+
+            .actionpad .button.set-customer {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+
+            .actionpad .button.set-customer {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
+
+            .actionpad .button {
+                position: relative;
+                display: block;
+                height: 54px;
+                width: 100%;
+                font-weight: bold;
+                vertical-align: middle;
+                color: #555555;
+                font-size: 14px;
+                border-radius: 0;
+                border: none;
+                border-right: 1px solid;
+                border-bottom: 1px solid;
+                border-color: #bfbfbf;
+                transition: all 150ms linear;
+            }
+
+            .actionpad .button.pay {
+                height: 162px;
+            }
+
+            .actionpad .button:last-child {
+                border-bottom-left-radius: 4px;
+            }
+
+            .actionpad .button.pay .pay-circle {
+                display: block;
+                font-size: 32px;
+                line-height: 54px;
+                padding-top: 6px;
+                background: rgb(86, 86, 86);
+                color: white;
+                width: 60px;
+                margin: auto;
+                border-radius: 30px;
+                margin-bottom: 10px;
+            }
+
+            .actionpad .button .fa-user {
+                position: absolute;
+                left: 13px;
+                top: 13px;
+                margin-right: 8px;
+                font-size: 18px;
+                background: rgba(255, 255, 255, 0.5);
+                line-height: 30px;
+                width: 30px;
+                border-radius: 100%;
+            }
+
+        </style>
+
+        <style>
+
+                    .centered {
+                          min-width: 500px;
+                        }
+                        demo-snippet {
+                          --demo-snippet-code: {
+                            max-height: 250px;
+                          }
+                        }
+
+                    </style>
+
+
+                    
+
+
+        <div class="row">
+
+                <!-- Begin Calculator -->
+            <div class="actionpad">
+                    <button class="button set-customer" name="customers" on-tap="_onNavigate">
+                        <i class="fa fa-user"></i>
+                        Customer
+                    </button>
+                    <button class="button pay" name="payment" on-tap="_onNavigate">
+                        <div class="pay-circle">
+                            <i class="fa fa-chevron-right"></i>
+                        </div>
+                        Payment
+                    </button>
+            </div>
+            <div class="numpad">
+                <button class="input-button number-char">1
+                </button>
+                <button class="input-button number-char">2
+                </button>
+                <button class="input-button number-char">3
+                </button>
+                <button class="mode-button selected-mode"
+                        data-mode="quantity">Qty
+                </button>
+                <br>
+                <button class="input-button number-char">4
+                </button>
+                <button class="input-button number-char">5
+                </button>
+                <button class="input-button number-char">6
+                </button>
+                <button class="mode-button"
+                        data-mode="discount">Disc
+                </button>
+                <br>
+                <button class="input-button number-char">7
+                </button>
+                <button class="input-button number-char">8
+                </button>
+                <button class="input-button number-char">9
+                </button>
+                <button class="mode-button" data-mode="price">
+                    Price
+                </button>
+                <br>
+                <button class="input-button numpad-minus">+/-
+                </button>
+                <button class="input-button number-char">0
+                </button>
+                <button class="input-button number-char">.
+                </button>
+                <button class="input-button numpad-backspace">
+                    <img height="21"
+                         src="../images/backspace.png"
+                         style="pointer-events: none;"
+                         width="24">
+                </button>
+            </div>
+            <!-- End Calculator -->
+
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'keyboard-element',
+            properties: {
+                type: String,
+                observer: "" // not important for this example so it's empty.
+               
+
+            },
+            ready: function () {
+
+            },
+            _onNavigate: function (evt) {
+                evt.preventDefault();
+                this.fire('navigate-page',{'page': evt.target.name});
+            }
+        });
+    </script>
+</dom-module>

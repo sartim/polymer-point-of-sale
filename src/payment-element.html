@@ -1,0 +1,465 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/app-layout/app-grid/app-grid-style.html">
+
+<link rel="import" href="my-customers.html">
+<link rel="stylesheet" href="sections.css">
+
+
+<dom-module id="payment-element">
+    <style>
+
+        .screen .top-content {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            height: 64px;
+            border-bottom: dashed 1px rgb(215, 215, 215);
+            text-align: center;
+        }
+
+        .screen .top-content {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            height: 64px;
+            border-bottom: dashed 1px rgb(215, 215, 215);
+            text-align: center;
+        }
+
+        .screen .top-content .button.back {
+            left: 0px;
+            margin-left: 16px;
+        }
+
+        .screen .top-content .button.next {
+            right: 0px;
+            margin-right: 16px;
+        }
+
+        .fa {
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .screen .top-content .button.next {
+            right: 0px;
+            margin-right: 16px;
+        }
+
+        .screen .top-content .button.highlight {
+            background: rgb(110, 200, 155);
+            color: white;
+            border: solid 1px rgb(110, 200, 155);
+        }
+
+        .screen .top-content .button {
+            position: absolute;
+            top: 0px;
+            line-height: 32px;
+            padding: 3px 13px;
+            font-size: 20px;
+            background: rgb(230, 230, 230);
+            margin: 12px;
+            border-radius: 3px;
+            border: solid 1px rgb(209, 209, 209);
+            cursor: pointer;
+            transition: all 150ms linear;
+        }
+
+        .screen .left-content.pc40 {
+            right: 66%;
+        }
+
+        .scrollable-y {
+            overflow: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        .screen .left-content {
+            position: absolute;
+            left: 0px;
+            top: 64px;
+            bottom: 0px;
+            right: 50%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            border-right: dashed 1px rgb(215, 215, 215);
+        }
+
+        .screen .screen-content {
+            margin: 0px auto;
+            max-width: 1024px;
+            text-align: left;
+            height: 100%;
+            position: relative;
+        }
+
+        .paymentmethods {
+            margin: 16px;
+        }
+
+        .screen .right-content.pc60 {
+            left: 34%;
+        }
+
+        .scrollable-y {
+            overflow: hidden !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        .screen .right-content {
+            position: relative;
+            right: 0px;
+            top: 64px;
+            bottom: 0px;
+            left: 50%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .paymentlines-container {
+            padding: 16px;
+            padding-top: 0;
+            border-bottom: dashed 1px gainsboro;
+            min-height: 154px;
+        }
+
+        .payment-screen .paymentlines-empty .total {
+            text-align: center;
+            padding: 24px 0px 18px;
+            font-size: 64px;
+            color: #43996E;
+            text-shadow: 0px 2px white, 0px 2px 2px rgba(0, 0, 0, 0.27);
+        }
+
+        .payment-screen .paymentlines-empty .message {
+            text-align: center;
+        }
+
+        .payment-numpad {
+            display: inline-block;
+            width: 70%;
+            box-sizing: border-box;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .payment-numpad .numpad {
+            float: none;
+            border-radius: 4px;
+            border-top: 1px solid;
+            border-left: 1px solid;
+            border-color: #cacaca;
+            width: 300px;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .numpad {
+            display: inline-block;
+            float: right;
+            text-align: center;
+            margin: 16px;
+            margin-top: 8px;
+            margin-left: 0px;
+            border: none;
+            border-radius: 0;
+            border-top: 1px solid;
+            border-color: #bfbfbf;
+            border-top-right-radius: 4px;
+        }
+
+        .payment-numpad {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+            padding: 20px;
+            text-align: center;
+            float: left;
+        }
+
+        .payment-numpad .numpad button:first-child {
+            border-top-left-radius: 4px;
+        }
+
+        .payment-numpad .numpad button {
+            width: 74px;
+            height: 74px;
+        }
+
+        .numpad button {
+            float: left;
+            height: 54px;
+            width: 54px;
+            font-weight: bold;
+            vertical-align: middle;
+            color: #555555;
+            border-radius: 0;
+            border: none;
+            border-right: 1px solid;
+            border-bottom: 1px solid;
+            border-color: #bfbfbf;
+            transition: all 150ms linear;
+        }
+
+        .input-button {
+            font-size: 24px;
+        }
+
+        button, a.button {
+            display: inline-block;
+            cursor: pointer;
+            padding: 4px 10px;
+            font-size: 11px;
+            border: 1px solid #cacaca;
+            background: #e2e2e2;
+            border-radius: 3px;
+        }
+
+        button {
+            box-shadow: none;
+            outline: none;
+            border: none;
+            font-family: 'Lato';
+        }
+
+        .payment-numpad {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+            padding: 16px;
+            text-align: center;
+            float: left;
+        }
+
+        .payment-numpad .numpad button {
+            width: 74px;
+            height: 74px;
+        }
+
+        .numpad button {
+            float: left;
+            height: 54px;
+            width: 54px;
+            font-weight: bold;
+            vertical-align: middle;
+            color: #555555;
+            border-radius: 0;
+            border: none;
+            border-right: 1px solid;
+            border-bottom: 1px solid;
+            border-color: #bfbfbf;
+            transition: all 150ms linear;
+        }
+
+        .input-button {
+            font-size: 24px;
+        }
+
+        button, a.button {
+            display: inline-block;
+            cursor: pointer;
+            padding: 4px 10px;
+            font-size: 11px;
+            border: 1px solid #cacaca;
+            background: #e2e2e2;
+            border-radius: 3px;
+        }
+
+        button {
+            box-shadow: none;
+            outline: none;
+            border: none;
+            font-family: 'Lato';
+        }
+
+        .payment-buttons {
+            display: inline-block;
+            width: 50%;
+            box-sizing: border-box;
+            padding: 16px;
+            padding-left: 0;
+            float: right;
+        }
+
+        .payment-screen .payment-buttons .button:first-child {
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+            border-top-width: 1px;
+        }
+
+        .payment-screen .payment-buttons .button {
+            background: #e2e2e2;
+            line-height: 73px;
+            font-size: 16px;
+            padding: 0px 8px;
+            border: solid 1px rgb(200, 200, 200);
+            border-top-width: 0;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+            transition: background-color, border-color, color 150ms linear;
+        }
+
+        .payment-screen .payment-buttons .button .fa {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            margin-top: -25px;
+            vertical-align: middle;
+            border-radius: 26px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-image-source: initial;
+            border-image-slice: initial;
+            border-image-width: initial;
+            border-image-outset: initial;
+            border-image-repeat: initial;
+            background: rgba(255, 255, 255, 0.4);
+            font-size: 20px;
+            transition: all 150ms linear;
+
+        }
+
+        .paymentmethods .button:last-child {
+            border-bottom-left-radius: 3px;
+            border-bottom-right-radius: 3px;
+        }
+
+        .paymentmethods .button:first-child {
+            border-top-width: 1px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .paymentmethods .button {
+            background: #e2e2e2;
+            line-height: 74px;
+            font-size: 16px;
+            border: solid 1px rgb(202, 202, 202);
+            border-top-width: 0px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .paymentlines-container {
+            padding: 16px;
+            padding-top: 0;
+            border-bottom: dashed 1px gainsboro;
+            min-height: 154px;
+        }
+
+    </style>
+
+    <template>
+
+        <div class="payment-screen screen" style="background-color: whitesmoke">
+            <div class="screen-content">
+                <div class="top-content">
+                    <span class="button back" name="till" on-tap="_onNavigate">
+                        <i class="fa fa-angle-double-left" name="till" on-tap="_onNavigate"></i>
+                        Back
+                    </span>
+                    <h1>Payment</h1>
+                    <span class="button next highlight">
+                        Validate
+                        <i class="fa fa-angle-double-right"></i>
+                    </span>
+                </div>
+                <div class="left-content pc40 touch-scrollable scrollable-y">
+
+                    <div class="paymentmethods-container">
+                        <div class="paymentmethods">
+
+                            <div class="button paymentmethod" data-id="5">
+                                Cash (USD)
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="right-content pc60 touch-scrollable scrollable-y">
+
+                    <section class="paymentlines-container">
+                        <div class="paymentlines-empty">
+                            <div class="total">
+                                $ 0.00
+                            </div>
+                            <div class="message">
+                                Please select a payment method.
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="payment-numpad">
+                        <div class="numpad">
+                            <button class="input-button number-char" data-action="1">1</button>
+                            <button class="input-button number-char" data-action="2">2</button>
+                            <button class="input-button number-char" data-action="3">3</button>
+                            <button class="mode-button" data-action="+10">+10</button>
+                            <br>
+                            <button class="input-button number-char" data-action="4">4</button>
+                            <button class="input-button number-char" data-action="5">5</button>
+                            <button class="input-button number-char" data-action="6">6</button>
+                            <button class="mode-button" data-action="+20">+20</button>
+                            <br>
+                            <button class="input-button number-char" data-action="7">7</button>
+                            <button class="input-button number-char" data-action="8">8</button>
+                            <button class="input-button number-char" data-action="9">9</button>
+                            <button class="mode-button" data-action="+50">+50</button>
+                            <br>
+                            <button class="input-button numpad-char" data-action="CLEAR">C</button>
+                            <button class="input-button number-char" data-action="0">0</button>
+                            <button class="input-button number-char" data-action=".">.</button>
+                            <button class="input-button numpad-backspace" data-action="BACKSPACE">
+                                <img height="21" src="../images/backspace.png" width="24">
+                            </button>
+                        </div>
+                    </section>
+
+                    <div class="payment-buttons">
+                        <div class="button js_set_customer">
+                            <i class="fa fa-user"></i>
+                            <span class="js_customer_name"> Customer </span>
+                        </div>
+                        <div class="button js_invoice  ">
+                            <i class="fa fa-file-text-o"></i> Invoice
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+
+    Polymer({
+        is: 'payment-element',
+        ready: function () {
+
+        },
+        _onNavigate: function (evt) {
+            evt.preventDefault();
+            this.fire('navigate-page', {'page': evt.target.name});
+        }
+    });
+</script>
+
+
