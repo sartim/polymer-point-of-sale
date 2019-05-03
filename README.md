@@ -1,6 +1,6 @@
 # Polymer JS Point Of Sale App
 
-Point of sale application UI build using Polymer js library
+Point of sale application UI built using Polymer js library
 
 **Setup and running project on dev**
 
